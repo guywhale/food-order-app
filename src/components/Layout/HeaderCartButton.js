@@ -1,16 +1,35 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classes from './HeaderCartButton.module.css';
 import CartIcon from '../Cart/CartIcon';
 import CartContext from '../../store/cart-context';
 
 const HeaderCartButton = (props) => {
+	const [animateButton, setAnimateButton] = useState(false);
 	const cartContext = useContext(CartContext);
-	const noOfItemsInCart = cartContext.items.reduce((currentNumber, item) => {
+	const { items } = cartContext;
+	const noOfItemsInCart = items.reduce((currentNumber, item) => {
 		return currentNumber + item.amount;
 	}, 0);
+	const btnClasses = `${classes.button} ${animateButton ? classes.bump : ''}`;
+
+	useEffect(() => {
+		if (items.length === 0) {
+			return;
+		}
+
+		setAnimateButton(true);
+
+		const timer = setTimeout(() => {
+			setAnimateButton(false);
+		}, 300);
+
+		return () => {
+			clearTimeout(timer);
+		};
+	}, [items]);
 
 	return (
-		<button className={classes.button} {...props}>
+		<button className={btnClasses} {...props}>
 			<span className={classes.icon}>
 				<CartIcon />
 			</span>
